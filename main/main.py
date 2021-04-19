@@ -49,7 +49,7 @@ class Register(BaseModel):
 def register_view(register: Register):
     app.id += 1
     today = date.today()
-    days = len(register.name) + len(register.surname)
+    days = len(register.name) + len(register.surname) + 5
     output_json = {
         'id': app.id,
         'name': register.name,
