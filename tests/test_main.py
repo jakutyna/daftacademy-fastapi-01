@@ -50,4 +50,12 @@ def test_auth():
 
 
 def test_register():
-    pass
+    response = client.post('/register', json={"name": "Jan", "surname": "Nowacki"})
+    assert response.status_code == 201
+    assert response.json() == {
+        "id": 1,
+        "name": "Jan",
+        "surname": "Nowacki",
+        "register_date": "2021-04-20",
+        "vaccination_date": "2021-04-30"
+    }
