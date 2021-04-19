@@ -28,7 +28,7 @@ def auth_view(response: Response, password: str = None, password_hash: str = Non
     if password is None:
         response.status_code = 401
     else:
-        password_sha512 = sha512(password.encode('utf-8')).hexdigest()
+        password_sha512 = sha512(password.encode('unicode-escape')).hexdigest()
         if password_sha512 == password_hash:
             response.status_code = 204
         else:

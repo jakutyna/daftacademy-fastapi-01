@@ -47,3 +47,7 @@ def test_auth():
     response = client.get('/auth')
     assert response.status_code == 401
     assert response.text == '401'
+
+
+def test_register():
+    pass
