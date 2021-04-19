@@ -24,10 +24,13 @@ def method_post_view():
 
 # Ex3
 @app.get('/auth')
-def auth_view(response: Response, password: str = '', password_hash: str = ''):
-    password_sha512 = sha512(password.encode('utf-8')).hexdigest()
-    if password_sha512 == password_hash:
-        response.status_code = 204
-    else:
+def auth_view(response: Response, password: str = None, password_hash: str = None):
+    if password is None:
         response.status_code = 401
+    else:
+        password_sha512 = sha512(password.encode('utf-8')).hexdigest()
+        if password_sha512 == password_hash:
+            response.status_code = 204
+        else:
+            response.status_code = 401
     return response.status_code
