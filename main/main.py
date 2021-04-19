@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from hashlib import sha512
+import string
 
 from fastapi import FastAPI, Request, Response
 from pydantic import BaseModel
@@ -45,11 +46,16 @@ class Register(BaseModel):
     surname: str
 
 
+def count_letters(word):
+    alphabet = string.ascii_lowercase + string.ascii_uppercase
+    return len([i for i in word if i in alphabet])
+
+
 @app.post('/register', status_code=201)
 def register_view(register: Register):
     app.id += 1
     today = date.today()
-    days = len(register.name) + len(register.surname) + 5
+    days = count_letters(register.name) + count_letters(register.surname)
     output_json = {
         'id': app.id,
         'name': register.name,
