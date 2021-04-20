@@ -55,8 +55,7 @@ class Register(BaseModel):
 
 
 def count_letters(word):
-    alphabet = string.ascii_lowercase + string.ascii_uppercase
-    return len([i for i in word if i in alphabet])
+    return len([i for i in word if i.isalpha()])
 
 
 @app.post('/register', status_code=201)
