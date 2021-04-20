@@ -33,7 +33,7 @@ def method_post_view():
 @app.get('/auth')
 def auth_view(response: Response,
               password: Optional[str] = None, password_hash: Optional[str] = None):
-    if bool(password) is False or bool(password_hash) is False:
+    if password is None or password_hash is None or password == '':
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return response
 
