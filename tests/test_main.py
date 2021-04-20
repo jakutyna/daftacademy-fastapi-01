@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import pytest
 from fastapi.testclient import TestClient
 from main.main import app
@@ -56,6 +57,44 @@ def test_register():
         "id": 1,
         "name": "Jan",
         "surname": "Nowacki",
-        "register_date": "2021-04-20",
-        "vaccination_date": "2021-04-30"
+        "register_date": str(date.today()),
+        "vaccination_date": str(date.today() + timedelta(days=10))
     }
+    response = client.post('/register', json={"name": "Jan Sebastian", "surname": "Bach"})
+    assert response.status_code == 201
+    assert response.json() == {
+        "id": 2,
+        "name": "Jan Sebastian",
+        "surname": "Bach",
+        "register_date": str(date.today()),
+        "vaccination_date": str(date.today() + timedelta(days=16))
+    }
+
+
+def test_patient():
+    response = client.post('/register', json={"name": "Jan", "surname": "Nowacki"})
+    assert response.status_code == 201
+    response = client.post('/register', json={"name": "Jan Sebastian", "surname": "Bach"})
+    assert response.status_code == 201
+    response = client.get('/patient/1')
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "name": "Jan",
+        "surname": "Nowacki",
+        "register_date": str(date.today()),
+        "vaccination_date": str(date.today() + timedelta(days=10))
+    }
+    response = client.get('/patient/2')
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 2,
+        "name": "Jan Sebastian",
+        "surname": "Bach",
+        "register_date": str(date.today()),
+        "vaccination_date": str(date.today() + timedelta(days=16))
+    }
+    response = client.get('/patient/3')
+    assert response.status_code == 404
+    response = client.get('/patient/-1')
+    assert response.status_code == 400
