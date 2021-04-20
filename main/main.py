@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+import encodings
 from hashlib import sha512
 from typing import Optional
 import string
@@ -32,20 +33,18 @@ def method_post_view():
 @app.get('/auth')
 def auth_view(response: Response,
               password: Optional[str] = None, password_hash: Optional[str] = None):
-    if password is None:
+    if (password is None) or (password_hash is None):
         response.status_code = status.HTTP_401_UNAUTHORIZED
-        return response.status_code
+        return response
 
-    if '\\' in password:
-        password_sha512 = sha512(r'{}'.format(password).encode('utf-8')).hexdigest()
-    else:
-        password_sha512 = sha512(password.encode('unicode-escape')).hexdigest()
+    password_sha512 = sha512()
+    password_sha512.update(bytes(password, encodings.normalize_encoding('utf8')))
 
-    if password_sha512 == password_hash:
+    if password_sha512.hexdigest() == password_hash:
         response.status_code = status.HTTP_204_NO_CONTENT
     else:
         response.status_code = status.HTTP_401_UNAUTHORIZED
-    return response.status_code
+    return response
 
 
 # Ex4
@@ -79,25 +78,22 @@ def register_view(register: Register):
 def patient_view(patient_id: int, response: Response):
     if patient_id < 1:
         response.status_code = status.HTTP_400_BAD_REQUEST
-        return response.status_code
+        return response
     for patient_json in app.cache:
         if patient_json['id'] == patient_id:
             return patient_json
     response.status_code = status.HTTP_404_NOT_FOUND
-    return response.status_code
+    return response
 
 
 # test auth
-
 @app.get('/auth-test')
 def auth_test_view(response: Response,
                    password: Optional[str] = None):
     if password is None:
         response.status_code = status.HTTP_401_UNAUTHORIZED
-        return response.status_code
+        return response
 
-    if '\\' in password:
-        password_sha512 = sha512(r'{}'.format(password).encode('utf-8')).hexdigest()
-    else:
-        password_sha512 = sha512(password.encode('unicode-escape')).hexdigest()
-    return password_sha512, password
+    password_sha512 = sha512()
+    password_sha512.update(bytes(password, encodings.normalize_encoding('utf8')))
+    return password_sha512.hexdigest(), password
